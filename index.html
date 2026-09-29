@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard Data Management">
+    <title>Admin Dashboard - Data Management</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="dashboard">
+        <header class="dashboard-header">
+            <div>
+                <h1>ADMIN DASHBOARD</h1>
+                <p>Data Management</p>
+            </div>
+        </header>
+
+        <section class="toolbar" aria-label="Data controls">
+            <div class="search-filter">
+                <label class="search-box" for="searchInput">
+                    <span class="search-icon" aria-hidden="true">⌕</span>
+                    <input
+                        id="searchInput"
+                        type="search"
+                        placeholder="Cari data..."
+                        autocomplete="off"
+                    >
+                </label>
+
+                <label class="select-box" for="statusFilter">
+                    <select id="statusFilter">
+                        <option value="all">Semua Status</option>
+                        <option value="Menunggu">Menunggu</option>
+                        <option value="Success">Success</option>
+                    </select>
+                </label>
+            </div>
+
+            <button class="btn btn-primary" id="addDataBtn" type="button">
+                <span aria-hidden="true">+</span>
+                Tambah Data
+            </button>
+        </section>
+
+        <section class="table-card">
+            <div class="table-card-header">
+                <div>
+                    <h2>Data</h2>
+                    <p id="resultInfo">Menampilkan data</p>
+                </div>
+                <div class="header-card-right">
+                    <div class="total-data">
+                        Total Data: <strong id="totalData">0</strong>
+                    </div>
+                    <!-- Tombol untuk buka pengaturan judul kolom -->
+                    <button class="icon-btn" id="openColumnsModalBtn" type="button" title="Ubah Judul Kolom" aria-label="Ubah Judul Kolom">
+                        ⚙️
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Bar di Luar Tabel (Muncul saat baris diklik) -->
+            <div class="external-action-bar" id="externalActionBar" hidden>
+                <span class="selected-info">1 data dipilih</span>
+                <div class="action-bar-buttons">
+                    <button class="action-btn edit-btn" id="barEditBtn" type="button">Edit</button>
+                    <button class="action-btn delete-btn" id="barDeleteBtn" type="button">Hapus</button>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th id="thCol1">Account</th>
+                            <th id="thCol2">Type</th>
+                            <th id="thCol3">ID</th>
+                            <th id="thCol4">Jumlah</th>
+                            <th id="thCol5">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+                <div class="page-size">
+                    <label for="pageSize">Data per halaman</label>
+                    <select id="pageSize">
+                        <option value="10">10 / page</option>
+                        <option value="20">20 / page</option>
+                        <option value="50">50 / page</option>
+                    </select>
+                </div>
+
+                <nav class="pagination" id="pagination" aria-label="Pagination"></nav>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Ubah Judul Kolom -->
+    <div class="modal-overlay" id="columnsModal" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="columnsModalTitle">
+            <div class="modal-header">
+                <div>
+                    <h2 id="columnsModalTitle">Ubah Judul Kolom</h2>
+                    <p>Sesuaikan nama judul header tabel sesuai kebutuhan.</p>
+                </div>
+                <button class="modal-close" id="closeColumnsModal" type="button" aria-label="Tutup">&times;</button>
+            </div>
+
+            <form id="columnsForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="col1Input">Judul Kolom 1</label>
+                        <input id="col1Input" type="text" required maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="col2Input">Judul Kolom 2</label>
+                        <input id="col2Input" type="text" required maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="col3Input">Judul Kolom 3</label>
+                        <input id="col3Input" type="text" required maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="col4Input">Judul Kolom 4</label>
+                        <input id="col4Input" type="text" required maxlength="50">
+                    </div>
+                    <div class="form-group form-group-full">
+                        <label for="col5Input">Judul Kolom 5</label>
+                        <input id="col5Input" type="text" required maxlength="50">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="cancelColumnsBtn" type="button">Batal</button>
+                    <button class="btn btn-primary" type="submit">Simpan Judul</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="formModal" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="formModalTitle">
+            <div class="modal-header">
+                <div>
+                    <h2 id="formModalTitle">Tambah Data</h2>
+                    <p>Isi data berikut dengan lengkap.</p>
+                </div>
+                <button class="modal-close" id="closeFormModal" type="button" aria-label="Tutup">&times;</button>
+            </div>
+
+            <form id="dataForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="accountTypeInput" id="labelAccType">Account Type</label>
+                        <input id="accountTypeInput" name="accountType" type="text" placeholder="Contoh: Basic" required maxlength="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="typeInput" id="labelType">Type</label>
+                        <input id="typeInput" name="type" type="text" placeholder="Contoh: Claim" required maxlength="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="selectedIdInput" id="labelSelId">ID Terpilih</label>
+                        <input id="selectedIdInput" name="selectedId" type="text" placeholder="Contoh: USER001" required maxlength="150">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="claimAmountInput" id="labelClaimAmt">Jumlah Claim</label>
+                        <input id="claimAmountInput" name="claimAmount" type="number" min="0" step="1" placeholder="Contoh: 100" required>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="statusInput">Status</label>
+                        <select id="statusInput" name="status" required>
+                            <option value="Menunggu">Menunggu</option>
+                            <option value="Success">Success</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="cancelFormBtn" type="button">Batal</button>
+                    <button class="btn btn-primary" type="submit" id="saveDataBtn">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal" hidden>
+        <div class="modal modal-small" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+            <div class="modal-header">
+                <div>
+                    <h2 id="deleteModalTitle">Hapus Data?</h2>
+                    <p>Data yang dihapus tidak dapat dikembalikan.</p>
+                </div>
+                <button class="modal-close" id="closeDeleteModal" type="button" aria-label="Tutup">&times;</button>
+            </div>
+
+            <div class="delete-message">
+                <p>Hapus data ini?</p>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelDeleteBtn" type="button">Batal</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn" type="button">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
